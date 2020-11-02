@@ -6,7 +6,10 @@ If you are interested in collaborating or contacting me for further details, I c
 
 - ## Predictive Modeling/Machine Learning
   - ### Tabular Data
+    - #### Regression
   - ### Text Analysis
+    - #### Sentiment Analysis
+    - #### BERT Exploration
 
 - ## Visual Analytics
   - ### COVID_Impact_TSA: (R) Visualization of TSA checkpoint, including a webscrapper to update the visualiation without having to re-download the data.
