@@ -1,0 +1,85 @@
+---
+title: "TSA - COVID Travel"
+author: "Dominic Dillingham"
+date: "11/1/2020"
+output:
+  prettydoc::html_pretty:
+      highlight: github
+---
+
+## Load packages
+```{r setup, message = F}
+library(highcharter)
+library(dplyr)
+library(magrittr)
+library(rvest)
+library(lubridate)
+library(xts)
+library(zoo)
+```
+
+## Pull data from the TSA website
+```{r, message = F}
+# Initialize an empty vector to grab data
+dat <- vector(mode = "list", length = 0)
+
+# Scrap the tsa website, with up to 11 pages (each page contains 200 daily so this is unlikely to be reached)
+# Grab the table from the website and append the list to our vector
+link <- paste0('https://www.tsa.gov/coronavirus/passenger-throughput?page=', 0)
+for(i in 0:10){
+  tryCatch(
+    {
+      link <- paste0('https://www.tsa.gov/coronavirus/passenger-throughput?page=', i)
+      dat_html <- read_html(link) 
+      list <- html_table(dat_html, header = TRUE)
+      dat <- append(dat, list)
+    })
+}
+
+# Convert the list of lists to a dataframe for future parsing
+counter = 0
+for(table in dat){
+  if(counter == 0){
+    outTable <- as.data.frame(table)
+    counter = counter + 1
+  }else{
+    outTable = rbind(outTable, as.data.frame(table))
+  }
+}
+
+knitr::kable(head(outTable))
+```
+
+## Clean data
+```{r, message = F}
+
+# Format the table, including fixing dates and converting TSA checkins to numeric
+names(outTable) <- c('Date', 'Travel_2020', 'Travel_2019')
+outTable %<>% mutate(Date = mdy(Date),
+                     Travel_2020 = as.numeric(gsub(',', '', Travel_2020)),
+                     Travel_2019 = as.numeric(gsub(',', '', Travel_2019)))
+
+# Grab and format required fields, including creating a 10 day moving average of checkins by year
+outTable %<>% mutate(toplot = round(Travel_2020 / Travel_2019, 3)) %>% arrange(Date) %>%
+  mutate(rolling_2020 = rollmeanr(Travel_2020, k = 10, fill = NA),
+         rolling_2019 = rollmeanr(Travel_2019, k = 10, fill = NA),
+         rollingplot = round(rolling_2020/rolling_2019, 3)) %>% 
+  rename(date = Date) %>% select(-Travel_2020, -Travel_2019, -rolling_2020, -rolling_2019)
+
+knitr::kable(tail(outTable))
+```
+
+## Plot data
+```{r, message = F}
+
+# Convert data to a time series object
+test_xts <- xts(outTable$toplot, order.by = outTable$date)
+rolling_xts <- xts(outTable$rollingplot, order.by = outTable$date)
+
+# Plot with highcharts using a stock graph to allow for the user to select their own time frames of interest
+highchart(type = 'stock') %>%
+  hc_add_series(test_xts, type = 'line', name = 'Daily Ratio') %>%
+  hc_add_series(rolling_xts, type = 'line', name = 'Moving 10 Day Ratio') %>% 
+  hc_title(text = 'TSA Checkpoint Volume') %>%
+  hc_subtitle(text = '2020 Checkpoints / 2019 Checkpoints - including moving mean') 
+```
