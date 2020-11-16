@@ -1,4 +1,8 @@
-# Byte-compiled / optimized / DLL files
+#Custom
+data/enron_emails
+data/drugsCom_raw
+
+ Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
