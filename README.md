@@ -6,7 +6,7 @@ If you are interested in collaborating or contacting me for further details, I c
 
 - ## Predictive Modeling/Machine Learning
   - ### Tabular Data
-    - [Regression](https://github.com/ddil2149/datascience_portfolio/blob/main/banking_regression/banking_regression.ipynb): (Python) Review of a simple logistic, LASSO and XGBoost model, predicting banking data from UCI.
+    - [Regression](https://github.com/ddil2149/datascience_portfolio/blob/main/banking_regression/banking_regression.ipynb): (Python) Review of a simple logistic, LASSO and XGBoost model, predicting banking data from UCI. Dataset shows whether a client will subscribe to a bank term deposit.
   - ### Text Analysis
     - Sentiment Analysis
     - BERT Exploration
