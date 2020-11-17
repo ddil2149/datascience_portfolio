@@ -10,8 +10,8 @@ If you are interested in collaborating or contacting me for further details, I c
   - ### Text Analysis
     - [Sentiment Analysis/BERT Exploration](https://github.com/ddil2149/datascience_portfolio/blob/main/pharmaceuticalReview_text/PharmaceuticalReview.ipynb): (Python) (WIP) Analysis of pharmaceutical drugs reviews, including AFINN and VADER correlation with review scores and an exploration of BERT's performance on perdicting the score based on the review.
 
-- ## Deep Reinforcement Learning
-  - Next project
+  - ### Deep Reinforcement Learning
+    - Next project
 
 - ## Visual Analytics
   - [COVID_Impact_TSA](https://rpubs.com/ddil2149/684752): (R) Visualization of TSA checkpoints for similiar time periods in 2020 vs 2019, including a webscrapper to update the visualiation without having to re-download the data.
