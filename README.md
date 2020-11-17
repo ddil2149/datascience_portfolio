@@ -8,8 +8,10 @@ If you are interested in collaborating or contacting me for further details, I c
   - ### Tabular Data
     - [Regression](https://github.com/ddil2149/datascience_portfolio/blob/main/banking_regression/banking_regression.ipynb): (Python) Review of a simple logistic, LASSO and XGBoost model, predicting banking data from UCI. Dataset shows whether a client will subscribe to a bank term deposit.
   - ### Text Analysis
-    - Sentiment Analysis
-    - BERT Exploration
+    - [Sentiment Analysis/BERT Exploration](https://github.com/ddil2149/datascience_portfolio/blob/main/pharmaceuticalReview_text/PharmaceuticalReview.ipynb): (Python) (WIP) Analysis of pharmaceutical drugs reviews, including AFINN and VADER correlation with review scores and an exploration of BERT's performance on perdicting the score based on the review.
+
+- ## Deep Reinforcement Learning
+  - Next project
 
 - ## Visual Analytics
   - [COVID_Impact_TSA](https://rpubs.com/ddil2149/684752): (R) Visualization of TSA checkpoints for similiar time periods in 2020 vs 2019, including a webscrapper to update the visualiation without having to re-download the data.
