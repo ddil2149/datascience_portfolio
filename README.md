@@ -15,3 +15,4 @@ If you are interested in collaborating or contacting me for further details, I c
 
 - ## Visual Analytics
   - [COVID_Impact_TSA](https://rpubs.com/ddil2149/684752): (R) Visualization of TSA checkpoints for similiar time periods in 2020 vs 2019, including a webscrapper to update the visualiation without having to re-download the data.
+  - NEISS Data: Next visual project. Data contains stratified sample of US consumer product-related injuries by year. Looking to explore trends by year and trends within a year. 
