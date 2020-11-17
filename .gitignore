@@ -1,6 +1,5 @@
 #Custom
 data/enron_emails
-data/drugsCom_raw
 
  Byte-compiled / optimized / DLL files
 __pycache__/
