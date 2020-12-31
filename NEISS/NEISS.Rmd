@@ -1,0 +1,92 @@
+---
+title: "NEISS Review"
+author: "Dominic Dillingham"
+date: "12/30/2020"
+output:
+  prettydoc::html_pretty:
+      highlight: github
+---
+
+## Load packages
+```{r setup, message = F}
+library(highcharter)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(zoo)
+library(openxlsx)
+```
+
+## Ingest data from 2009 - 2019
+```{r, message = F}
+filelist <- list.files('../data/NEISS/')
+outDat <- list()
+counter = 1
+
+for(file in filelist){
+  fullDat <- read.xlsx(paste0('../data/NEISS/', file), sheet = 1, detectDates = T)
+  mapDat <- read.xlsx(paste0('../data/NEISS/', file), sheet = 2)
+  
+  ## Fix a few fields
+  # convert all ages to years
+  fullDat %<>% mutate(Age = ifelse(Age > 200, (Age - 200)/12, Age))
+  
+  # body part mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'BDYPT') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapBody = Format.value.label), by = c('Body_Part' = 'Starting.value.for.format')) %>%
+    left_join(mapDat %>% filter(Format.name == 'BDYPT') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapBody_2 = Format.value.label), by = c('Body_Part_2' = 'Starting.value.for.format'))
+  
+  # diagnosis mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'DIAG') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapDiagnosis_2 = Format.value.label), by = c('Diagnosis_2' = 'Starting.value.for.format'))
+  
+  # fire mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'FIRE') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapFire = Format.value.label), by = c('Fire_Involvement' = 'Starting.value.for.format'))
+  
+  # gender mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'GENDER') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapGender = Format.value.label), by = c('Sex' = 'Starting.value.for.format'))
+  
+  # location mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'LOC') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapLocation = Format.value.label), by = c('Location' = 'Starting.value.for.format'))
+  
+  # location mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'PROD') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapProd_1 = Format.value.label), by = c('Product_1' = 'Starting.value.for.format')) %>%
+    left_join(mapDat %>% filter(Format.name == 'PROD') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapProd_2 = Format.value.label), by = c('Product_2' = 'Starting.value.for.format')) %>% 
+    left_join(mapDat %>% filter(Format.name == 'PROD') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapProd_3 = Format.value.label), by = c('Product_3' = 'Starting.value.for.format'))
+  
+  # race mapping
+  fullDat %<>% left_join(mapDat %>% filter(Format.name == 'RACE') %>% 
+                mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
+                select(Starting.value.for.format, Format.value.label) %>% 
+                rename(mapRace = Format.value.label), by = c('Race' = 'Starting.value.for.format'))
+  outDat[[counter]] = fullDat
+  counter = counter + 1
+}
+
+```
+
