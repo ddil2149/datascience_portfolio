@@ -7,14 +7,21 @@ output:
       highlight: github
 ---
 
+## Background
+NEISS data is aggregated annually and are provided by the Consumer Product Safety Commission (CPSC).From their website, "CPSC’s National Electronic Injury Surveillance System (NEISS) is a probability sample of hospitals in the U.S. and its territories that have at least six beds and an emergency department. The NEISS is a stratified sample based on emergency department size and geographic location. The emergency department size is categorized by the annual number of emergency department visits reported by each hospital. Currently, there is also a stratum of children’s hospitals. Patient information is collected nightly from each NEISS hospital for every patient treated in the emergency department for an injury associated with consumer products."
+
+Data from 2009 to 2019 were obtained from the CPSC website and are reviewed in more detail below.
+
 ## Load packages
 ```{r setup, message = F}
-library(highcharter)
+library(ggplot2)
 library(dplyr)
 library(magrittr)
 library(lubridate)
 library(zoo)
 library(openxlsx)
+library(plotly)
+library(ggthemes)
 ```
 
 ## Ingest data from 2009 - 2019
@@ -84,9 +91,87 @@ for(file in filelist){
                 mutate(Starting.value.for.format = as.double(Starting.value.for.format)) %>%
                 select(Starting.value.for.format, Format.value.label) %>% 
                 rename(mapRace = Format.value.label), by = c('Race' = 'Starting.value.for.format'))
-  outDat[[counter]] = fullDat
+  outDat[[counter]] = fullDat %>% select(-Other_Diagnosis_2)
   counter = counter + 1
 }
 
+rm(check, counter, file, filelist, fullDat, mapDat)
+
+finalOut <- bind_rows(outDat)
+rm(outDat)
 ```
 
+## Clean data for further analysis
+```{r, message = F}
+## Print out the count a type of the primary product
+
+# out <- finalOut %>% group_by(mapProd_1) %>% summarise(count = n()) 
+# write.csv(out, 'productCount.csv', row.names = F)
+
+
+
+
+```
+
+## Visual Analysis
+
+### Location{.tabset}
+There appears to be a slight increase in the distribution of unknown locations in the more recent years. Farm and instury were removed due to their small volume. 
+
+```{r, message = F}
+graphDat <- finalOut %>% mutate(treatYear = lubridate::year(Treatment_Date)) %>%
+  group_by(treatYear,
+           mapLocation) %>%
+  summarise(count = n()) %>%
+  filter(!(mapLocation %in% c('FARM', 'INDST.'))) %>%
+  rename(Location = mapLocation)
+
+ggplotly(ggplot(graphDat, aes(fill=Location, y=count, x=treatYear)) + 
+    geom_bar(position="fill", stat="identity") +
+  scale_x_continuous(breaks = seq(2009, 2019, 1)) +
+  xlab('NEISS Year') +
+  ylab('Percent of Total Records') +
+  ggtitle('Distribution of Location by Year') + 
+  theme_tufte() + theme_minimal() + scale_fill_brewer(palette="Pastel1")) 
+```
+
+### Primary Body Part{.tabset}
+Across the various body parts, there appears to be little variation, this is after excluding a handful of low volume categories that were distorting the analysis. 
+
+```{r, message = F}
+graphDat <- finalOut %>% mutate(treatYear = lubridate::year(Treatment_Date)) %>%
+  group_by(treatYear,
+           mapBody) %>%
+  summarise(count = n()) %>%
+  filter(!(mapBody %in% c('0 - INTERNAL', '38 - PUBIC REGION', '77 - EYEBALL', '80 - UPPER ARM', '81 - UPPER LEG', '87 - NOT STATED/UNK',
+                          '94 - EAR', '93 - TOE', '89 - NECK', '88 - MOUTH'))) %>%
+  rename(Body = mapBody)
+
+ggplotly(ggplot(graphDat, aes(fill=Body, y=count, x=treatYear)) + 
+    geom_bar(position="fill", stat="identity") +
+  scale_x_continuous(breaks = seq(2009, 2019, 1)) +
+  xlab('NEISS Year') +
+  ylab('Percent of Total Records') +
+  ggtitle('Distribution of Body Part by Year')+ 
+  theme_tufte() + theme_minimal())
+```
+
+### Primary Product{.tabset}
+Across the various body parts, there appears to be little variation, this is after excluding a handful of low volume categories that were distorting the analysis. 
+
+```{r, message = F}
+graphDat <- finalOut %>% mutate(treatYear = lubridate::year(Treatment_Date)) %>%
+  group_by(treatYear,
+           mapProd_1) %>%
+  summarise(count = n()) %>%
+  filter(!(mapProd_1 %in% c())) %>%
+  rename(Body = mapProd_1)
+
+ggplotly(ggplot(graphDat, aes(fill=Body, y=count, x=treatYear)) + 
+    geom_bar(position="fill", stat="identity") +
+  scale_x_continuous(breaks = seq(2009, 2019, 1)) +
+  xlab('NEISS Year') +
+  ylab('Percent of Total Records') +
+  ggtitle('Distribution of Body Part by Year')+ 
+  theme_tufte() + theme_minimal())
+```

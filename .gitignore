@@ -1,5 +1,6 @@
 #Custom
 data/enron_emails
+*.Rhistory
 
  Byte-compiled / optimized / DLL files
 __pycache__/
