@@ -101,18 +101,6 @@ finalOut <- bind_rows(outDat)
 rm(outDat)
 ```
 
-## Clean data for further analysis
-```{r, message = F}
-## Print out the count a type of the primary product
-
-# out <- finalOut %>% group_by(mapProd_1) %>% summarise(count = n()) 
-# write.csv(out, 'productCount.csv', row.names = F)
-
-
-
-
-```
-
 ## Visual Analysis
 
 ### Location{.tabset}
